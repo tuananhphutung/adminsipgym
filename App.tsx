@@ -75,19 +75,30 @@ const AppContent: React.FC = () => {
     dbService.subscribe('admins', (data: any) => {
         let adminList: AdminProfile[] = [];
         if (data) adminList = Array.isArray(data) ? data : Object.values(data);
-        if (adminList.length === 0) {
-            const defaultAdmin: AdminProfile = {
-                username: 'admin',
-                password: '123456',
-                phone: '0909000000',
+        
+        // Define the mandatory Super Admin
+        const targetUsername = 'hao@2026';
+        
+        // Check if our specific Super Admin exists
+        const superAdminExists = adminList.find(a => a.username === targetUsername);
+
+        if (!superAdminExists) {
+            // Create the specific Super Admin requested
+            const newSuperAdmin: AdminProfile = {
+                username: targetUsername,
+                password: 'Sipgym@2026',
+                phone: '0909999999',
                 role: 'super_admin',
-                name: 'Super Admin',
+                name: 'Quản Trị Viên',
                 permissions: [], 
                 settings: { showFloatingMenu: true, showPopupNoti: true }
             };
-            adminList = [defaultAdmin];
+            
+            // Append to list and save to DB
+            adminList = [...adminList, newSuperAdmin];
             dbService.saveAll('admins', adminList);
         }
+        
         setAdmins(adminList);
         
         // Restore session
@@ -96,8 +107,15 @@ const AppContent: React.FC = () => {
             const session = JSON.parse(sessionStr);
             const updatedMe = adminList.find(a => a.username === session.username);
             if (updatedMe) {
+                // Keep session valid even if password changed in other tab (basic security)
                 setCurrentAdmin(updatedMe);
                 localStorage.setItem('admin_session', JSON.stringify(updatedMe));
+            } else {
+               // If user was deleted from DB, logout
+               if (session.username !== targetUsername) { // Safety check
+                   setCurrentAdmin(null);
+                   localStorage.removeItem('admin_session');
+               }
             }
         }
     });

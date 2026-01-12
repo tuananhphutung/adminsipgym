@@ -58,7 +58,11 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ admins = [], onLoginSuccess }) 
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const admin = admins.find(a => a.username === username && a.password === password);
+    // Trim inputs to avoid accidental spaces
+    const cleanUser = username.trim();
+    const cleanPass = password.trim();
+    
+    const admin = admins.find(a => a.username === cleanUser && a.password === cleanPass);
     if (admin) {
       handleSuccess(admin);
     } else {
@@ -68,8 +72,8 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ admins = [], onLoginSuccess }) 
   
   const handleSuccess = (admin: AdminProfile) => {
       if (onLoginSuccess) onLoginSuccess(admin);
-      localStorage.setItem('admin_logged', 'true');
-      navigate('/admin/dashboard');
+      // Corrected route path from '/admin/dashboard' to '/dashboard' based on App.tsx
+      navigate('/dashboard');
   };
 
   const handleForgotSubmit = (e: React.FormEvent) => {
@@ -198,10 +202,6 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ admins = [], onLoginSuccess }) 
                 <button type="button" onClick={() => { setLoginMethod('password'); setError(''); }} className="w-full text-center text-gray-400 font-bold text-xs uppercase mt-2">Quay lại</button>
             </form>
         )}
-        
-        <button onClick={() => navigate('/')} className="absolute bottom-8 left-0 right-0 flex justify-center items-center gap-2 text-gray-400 font-bold text-xs hover:text-orange-500 transition-colors uppercase tracking-wider">
-            <ArrowLeft className="w-4 h-4" /> Về trang chủ
-        </button>
       </div>
     </div>
   );

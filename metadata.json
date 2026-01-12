@@ -1,0 +1,7 @@
+{
+  "name": "Sip Gym Admin Portal",
+  "description": "Dedicated management dashboard for Sip Gym administrators.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
